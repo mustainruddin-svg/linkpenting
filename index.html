@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Portal Link — Yayasan Ar-Rahmah Sulawesi</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Lora:ital,wght@1,600&display=swap" rel="stylesheet">
+
+  <!-- Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <!-- PapaParse -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+
+  <style>
+    /* ─── RESET & BASE ───────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #f0f2f5;
+      --surface:   #ffffff;
+      --border:    #e2e6ec;
+      --text-main: #1a202c;
+      --text-muted:#6b7280;
+      --radius-lg: 16px;
+      --radius-md: 12px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.05);
+      --shadow-md: 0 4px 16px rgba(0,0,0,.10);
+      --shadow-lg: 0 8px 32px rgba(0,0,0,.12);
+      --transition: 200ms cubic-bezier(.4,0,.2,1);
+
+      /* Unit palette */
+      --paud:     #f59e0b;   /* Amber  */
+      --paud-dim: #fef3c7;
+      --sdit:     #10b981;   /* Emerald */
+      --sdit-dim: #d1fae5;
+      --smpit:    #3b82f6;   /* Blue   */
+      --smpit-dim:#dbeafe;
+      --smait:    #8b5cf6;   /* Violet */
+      --smait-dim:#ede9fe;
+      --yayasan:  #ef4444;   /* Rose   */
+      --yayasan-dim:#fee2e2;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text-main);
+      min-height: 100vh;
+      /* subtle dot-grid background */
+      background-image: radial-gradient(circle, #c8cdd6 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    /* ─── HEADER ─────────────────────────────────────────────── */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      height: 64px;
+    }
+
+    .logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #10b981, #3b82f6);
+      border-radius: 10px;
+      display: grid; place-items: center;
+      color: #fff; font-size: 16px;
+    }
+
+    .logo-text {
+      display: flex; flex-direction: column; line-height: 1;
+    }
+
+    .logo-text .brand {
+      font-weight: 800; font-size: 14px; color: var(--text-main);
+      letter-spacing: -.3px;
+    }
+
+    .logo-text .sub {
+      font-size: 11px; color: var(--text-muted); font-style: italic;
+      font-family: 'Lora', serif;
+    }
+
+    .search-wrap {
+      flex: 1;
+      max-width: 480px;
+      position: relative;
+      margin-left: auto;
+    }
+
+    .search-icon {
+      position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted); font-size: 13px;
+      pointer-events: none;
+    }
+
+    #searchInput {
+      width: 100%;
+      padding: 9px 14px 9px 36px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: inherit; font-size: 13.5px;
+      background: var(--bg);
+      color: var(--text-main);
+      outline: none;
+      transition: border-color var(--transition), box-shadow var(--transition);
+    }
+
+    #searchInput:focus {
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+      background: #fff;
+    }
+
+    #searchInput::placeholder { color: var(--text-muted); }
+
+    /* ─── MAIN ───────────────────────────────────────────────── */
+    main {
+      max-width: 1200px;
+      margin: 32px auto;
+      padding: 0 24px 64px;
+    }
+
+    /* ─── LEGEND CHIPS ───────────────────────────────────────── */
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-bottom: 28px;
+    }
+
+    .chip {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 999px;
+      font-size: 11.5px; font-weight: 600;
+      border: 1.5px solid transparent;
+      cursor: default; user-select: none;
+    }
+
+    .chip .dot { width: 7px; height: 7px; border-radius: 50%; }
+
+    .chip-paud    { background: var(--paud-dim);    color: #92400e; border-color: var(--paud); }
+    .chip-sdit    { background: var(--sdit-dim);    color: #065f46; border-color: var(--sdit); }
+    .chip-smpit   { background: var(--smpit-dim);   color: #1e3a8a; border-color: var(--smpit); }
+    .chip-smait   { background: var(--smait-dim);   color: #4c1d95; border-color: var(--smait); }
+    .chip-yayasan { background: var(--yayasan-dim); color: #991b1b; border-color: var(--yayasan); }
+
+    /* ─── CATEGORY SECTION ───────────────────────────────────── */
+    .category-section { margin-bottom: 36px; }
+
+    .category-header {
+      display: flex; align-items: center; gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .category-title {
+      font-size: 12px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1.2px; color: var(--text-muted);
+    }
+
+    .category-line {
+      flex: 1; height: 1px; background: var(--border);
+    }
+
+    .category-count {
+      font-size: 11px; color: var(--text-muted);
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 1px 8px; font-weight: 600;
+    }
+
+    /* ─── LINK GRID ──────────────────────────────────────────── */
+    .link-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+    }
+
+    /* ─── LINK CARD ──────────────────────────────────────────── */
+    .link-card {
+      display: flex; align-items: center; gap: 11px;
+      padding: 12px 14px;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      color: var(--text-main);
+      font-size: 13px; font-weight: 600;
+      transition: transform var(--transition), box-shadow var(--transition),
+                  border-color var(--transition), background var(--transition);
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* subtle top-border accent */
+    .link-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+
+    .link-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .link-card:hover::before { opacity: 1; }
+
+    .link-card:active { transform: translateY(-1px); }
+
+    /* Icon bubble */
+    .card-icon {
+      width: 34px; height: 34px; border-radius: var(--radius-sm);
+      display: grid; place-items: center;
+      font-size: 14px; flex-shrink: 0;
+      transition: transform var(--transition);
+    }
+
+    .link-card:hover .card-icon { transform: scale(1.1) rotate(-5deg); }
+
+    .card-label { flex: 1; line-height: 1.3; }
+
+    .card-arrow {
+      font-size: 10px; color: var(--text-muted);
+      opacity: 0; transform: translateX(-4px);
+      transition: opacity var(--transition), transform var(--transition);
+    }
+
+    .link-card:hover .card-arrow {
+      opacity: 1; transform: translateX(0);
+    }
+
+    /* ── Unit color variants ── */
+    /* PAUD — Amber */
+    .unit-paud .card-icon { background: var(--paud-dim); color: var(--paud); }
+    .unit-paud:hover { border-color: var(--paud); background: #fffbf0; }
+    .unit-paud::before { background: var(--paud); }
+
+    /* SDIT — Emerald */
+    .unit-sdit .card-icon { background: var(--sdit-dim); color: var(--sdit); }
+    .unit-sdit:hover { border-color: var(--sdit); background: #f0fdf9; }
+    .unit-sdit::before { background: var(--sdit); }
+
+    /* SMPIT — Blue */
+    .unit-smpit .card-icon { background: var(--smpit-dim); color: var(--smpit); }
+    .unit-smpit:hover { border-color: var(--smpit); background: #f0f7ff; }
+    .unit-smpit::before { background: var(--smpit); }
+
+    /* SMAIT — Violet */
+    .unit-smait .card-icon { background: var(--smait-dim); color: var(--smait); }
+    .unit-smait:hover { border-color: var(--smait); background: #faf5ff; }
+    .unit-smait::before { background: var(--smait); }
+
+    /* Yayasan — Rose */
+    .unit-yayasan .card-icon { background: var(--yayasan-dim); color: var(--yayasan); }
+    .unit-yayasan:hover { border-color: var(--yayasan); background: #fff5f5; }
+    .unit-yayasan::before { background: var(--yayasan); }
+
+    /* ─── STATES ─────────────────────────────────────────────── */
+    .state-screen {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 40vh; gap: 12px;
+      color: var(--text-muted); text-align: center;
+    }
+
+    .state-screen .state-icon { font-size: 40px; opacity: .4; }
+    .state-screen h3 { font-size: 16px; font-weight: 700; color: var(--text-main); }
+    .state-screen p { font-size: 13px; }
+
+    /* Spinner */
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid var(--border);
+      border-top-color: #3b82f6;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ─── EMPTY SEARCH ───────────────────────────────────────── */
+    #noResults { display: none; }
+
+    /* ─── STAGGER ANIMATION ──────────────────────────────────── */
+    .link-card {
+      animation: cardIn 280ms ease both;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── FOOTER ─────────────────────────────────────────────── */
+    .footer {
+      text-align: center; font-size: 11.5px;
+      color: var(--text-muted); padding: 16px;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────────────────── */
+    @media (max-width: 600px) {
+      .logo-text .sub { display: none; }
+      .link-grid { grid-template-columns: 1fr 1fr; gap: 9px; }
+      main { padding: 0 14px 48px; margin-top: 20px; }
+      .header-inner { gap: 10px; }
+    }
+
+    @media (max-width: 380px) {
+      .link-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── HEADER ──────────────────────────────────────── -->
+<header class="header">
+  <div class="header-inner">
+    <div class="logo-wrap">
+      <div class="logo-icon"><i class="fas fa-link"></i></div>
+      <div class="logo-text">
+        <span class="brand">Portal Link</span>
+        <span class="sub">Ar-Rahmah Sulawesi</span>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <i class="fas fa-magnifying-glass search-icon"></i>
+      <input type="search" id="searchInput" placeholder="Cari link…" autocomplete="off" />
+    </div>
+  </div>
+</header>
+
+<!-- ─── MAIN ─────────────────────────────────────────── -->
+<main>
+
+  <!-- Legend -->
+  <div class="legend" id="legend">
+    <span class="chip chip-paud">
+      <span class="dot" style="background:var(--paud)"></span>PAUD
+    </span>
+    <span class="chip chip-sdit">
+      <span class="dot" style="background:var(--sdit)"></span>SDIT
+    </span>
+    <span class="chip chip-smpit">
+      <span class="dot" style="background:var(--smpit)"></span>SMPIT
+    </span>
+    <span class="chip chip-smait">
+      <span class="dot" style="background:var(--smait)"></span>SMAIT
+    </span>
+    <span class="chip chip-yayasan">
+      <span class="dot" style="background:var(--yayasan)"></span>Yayasan
+    </span>
+  </div>
+
+  <!-- Dynamic content -->
+  <div id="app">
+    <div class="state-screen" id="loadingScreen">
+      <div class="spinner"></div>
+      <p>Memuat data…</p>
+    </div>
+  </div>
+
+  <!-- No results -->
+  <div class="state-screen" id="noResults">
+    <span class="state-icon"><i class="fas fa-face-meh"></i></span>
+    <h3>Tidak ditemukan</h3>
+    <p>Coba kata kunci lain.</p>
+  </div>
+
+</main>
+
+<!-- ─── FOOTER ────────────────────────────────────────── -->
+<footer class="footer">
+  &copy; <span id="yr"></span> Yayasan Ar-Rahmah Sulawesi &mdash; Internal Use Only
+</footer>
+
+<script>
+  /* ════════════════════════════════════════════════
+     KONFIGURASI — ganti URL di bawah ini dengan
+     link "Publish to web" Google Sheets Anda
+     (Format: CSV)
+  ════════════════════════════════════════════════ */
+  const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSlTIQo3hq7x1pIyaRRqJa9TUa8haa-xIYsH7d_JYr2XLYfoa9QZLIiUJHvxd3cTAAXunNVoOqq89cu/pub?gid=0&single=true&output=csv';
+
+  /* ────────────────────────────────────────────── */
+
+  document.getElementById('yr').textContent = new Date().getFullYear();
+
+  /* ── Demo / Fallback data (digunakan jika CSV_URL belum diisi) ── */
+  const DEMO_DATA = [
+    { 'Nama Link': 'E-Rapor PAUD',      URL: '#', Kategori: 'Administrasi', Unit: 'PAUD',    Ikon: 'fas fa-file-alt' },
+    { 'Nama Link': 'Absensi PAUD',      URL: '#', Kategori: 'Administrasi', Unit: 'PAUD',    Ikon: 'fas fa-calendar-check' },
+    { 'Nama Link': 'E-Rapor SDIT',      URL: '#', Kategori: 'Administrasi', Unit: 'SDIT',    Ikon: 'fas fa-file-alt' },
+    { 'Nama Link': 'Absensi SDIT',      URL: '#', Kategori: 'Administrasi', Unit: 'SDIT',    Ikon: 'fas fa-calendar-check' },
+    { 'Nama Link': 'E-Rapor SMPIT',     URL: '#', Kategori: 'Administrasi', Unit: 'SMPIT',   Ikon: 'fas fa-file-alt' },
+    { 'Nama Link': 'E-Rapor SMAIT',     URL: '#', Kategori: 'Administrasi', Unit: 'SMAIT',   Ikon: 'fas fa-file-alt' },
+    { 'Nama Link': 'Absensi SMAIT',     URL: '#', Kategori: 'Administrasi', Unit: 'SMAIT',   Ikon: 'fas fa-calendar-check' },
+    { 'Nama Link': 'SK Karyawan',       URL: '#', Kategori: 'Administrasi', Unit: 'Yayasan', Ikon: 'fas fa-stamp' },
+    { 'Nama Link': 'Google Drive Foto', URL: '#', Kategori: 'Media',        Unit: 'Yayasan', Ikon: 'fab fa-google-drive' },
+    { 'Nama Link': 'Canva Tim',         URL: '#', Kategori: 'Media',        Unit: 'Yayasan', Ikon: 'fas fa-palette' },
+    { 'Nama Link': 'IG Ar-Rahmah',      URL: '#', Kategori: 'Media',        Unit: 'Yayasan', Ikon: 'fab fa-instagram' },
+    { 'Nama Link': 'YouTube Channel',   URL: '#', Kategori: 'Media',        Unit: 'Yayasan', Ikon: 'fab fa-youtube' },
+    { 'Nama Link': 'Live Stream',       URL: '#', Kategori: 'Media',        Unit: 'SMAIT',   Ikon: 'fas fa-tower-broadcast' },
+    { 'Nama Link': 'Database Siswa',    URL: '#', Kategori: 'Database',     Unit: 'SDIT',    Ikon: 'fas fa-database' },
+    { 'Nama Link': 'Data Guru',         URL: '#', Kategori: 'Database',     Unit: 'Yayasan', Ikon: 'fas fa-users' },
+    { 'Nama Link': 'Inventaris',        URL: '#', Kategori: 'Database',     Unit: 'Yayasan', Ikon: 'fas fa-boxes-stacked' },
+    { 'Nama Link': 'Form Pendaftaran',  URL: '#', Kategori: 'Penerimaan',   Unit: 'SMPIT',   Ikon: 'fas fa-pen-to-square' },
+    { 'Nama Link': 'Jadwal PPDB',       URL: '#', Kategori: 'Penerimaan',   Unit: 'SMAIT',   Ikon: 'fas fa-calendar-days' },
+  ];
+
+  /* ── State ── */
+  let allData = [];
+
+  /* ── Unit → CSS class map ── */
+  function unitClass(unit) {
+    const map = {
+      'PAUD': 'unit-paud',
+      'SDIT': 'unit-sdit',
+      'SMPIT': 'unit-smpit',
+      'SMAIT': 'unit-smait',
+      'YAYASAN': 'unit-yayasan',
+    };
+    return map[(unit || '').toUpperCase()] || 'unit-yayasan';
+  }
+
+  /* ── Render ── */
+  function render(data) {
+    const app = document.getElementById('app');
+    const noResults = document.getElementById('noResults');
+
+    if (data.length === 0) {
+      app.innerHTML = '';
+      noResults.style.display = 'flex';
+      return;
+    }
+    noResults.style.display = 'none';
+
+    /* Group by Kategori */
+    const groups = {};
+    data.forEach(row => {
+      const cat = row['Kategori'] || 'Lainnya';
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(row);
+    });
+
+    let html = '';
+    let delay = 0;
+
+    for (const [cat, items] of Object.entries(groups)) {
+      html += `
+        <section class="category-section">
+          <div class="category-header">
+            <span class="category-title">${escHtml(cat)}</span>
+            <div class="category-line"></div>
+            <span class="category-count">${items.length}</span>
+          </div>
+          <div class="link-grid">
+      `;
+      items.forEach(item => {
+        const cls  = unitClass(item['Unit']);
+        const icon = escHtml(item['Ikon'] || 'fas fa-link');
+        const name = escHtml(item['Nama Link'] || '—');
+        const url  = escHtml(item['URL'] || '#');
+        delay += 30;
+        html += `
+          <a href="${url}" target="_blank" rel="noopener noreferrer"
+             class="link-card ${cls}"
+             style="animation-delay:${delay}ms">
+            <span class="card-icon"><i class="${icon}"></i></span>
+            <span class="card-label">${name}</span>
+            <i class="fas fa-arrow-right card-arrow"></i>
+          </a>
+        `;
+      });
+      html += `</div></section>`;
+    }
+
+    app.innerHTML = html;
+  }
+
+  function escHtml(str) {
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+      .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  /* ── Search ── */
+  document.getElementById('searchInput').addEventListener('input', function () {
+    const q = this.value.trim().toLowerCase();
+    if (!q) { render(allData); return; }
+    const filtered = allData.filter(r =>
+      (r['Nama Link'] || '').toLowerCase().includes(q)
+    );
+    render(filtered);
+  });
+
+  /* ── Load CSV ── */
+  function loadData() {
+    if (!CSV_URL || CSV_URL === 'URL_SPREADSHEET_DISINI') {
+      /* Gunakan demo data jika URL belum diisi */
+      allData = DEMO_DATA;
+      render(allData);
+      document.getElementById('loadingScreen').style.display = 'none';
+      return;
+    }
+
+    Papa.parse(CSV_URL, {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      complete(results) {
+        document.getElementById('loadingScreen').style.display = 'none';
+        allData = results.data;
+        render(allData);
+      },
+      error(err) {
+        document.getElementById('loadingScreen').innerHTML = `
+          <div class="state-screen">
+            <span class="state-icon"><i class="fas fa-triangle-exclamation"></i></span>
+            <h3>Gagal memuat data</h3>
+            <p>${err.message}</p>
+          </div>`;
+      }
+    });
+  }
+
+  loadData();
+</script>
+</body>
+</html>
