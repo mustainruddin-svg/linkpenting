@@ -12,7 +12,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
 
   <style>
-    /* ─── RESET & BASE ─────────────────────────────────── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
@@ -28,8 +27,6 @@
       --shadow-md: 0 4px 16px rgba(0,0,0,.10);
       --shadow-lg: 0 8px 40px rgba(0,0,0,.20);
       --transition: 200ms cubic-bezier(.4,0,.2,1);
-
-      /* Unit palette */
       --paud:        #f59e0b; --paud-dim:    #fef3c7;
       --sdit:        #10b981; --sdit-dim:    #d1fae5;
       --smpit:       #3b82f6; --smpit-dim:   #dbeafe;
@@ -38,22 +35,17 @@
     }
 
     html { scroll-behavior: smooth; }
-
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text-main);
-      min-height: 100vh;
+      background: var(--bg); color: var(--text-main); min-height: 100vh;
       background-image: radial-gradient(circle, #c8cdd6 1px, transparent 1px);
       background-size: 24px 24px;
     }
 
-    /* ─── HEADER ───────────────────────────────────────── */
+    /* ── HEADER ── */
     .header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      padding: 0 24px;
-      position: sticky; top: 0; z-index: 100;
+      background: var(--surface); border-bottom: 1px solid var(--border);
+      padding: 0 24px; position: sticky; top: 0; z-index: 100;
       box-shadow: var(--shadow-sm);
     }
     .header-inner {
@@ -70,7 +62,6 @@
     .logo-text { display: flex; flex-direction: column; line-height: 1; }
     .logo-text .brand { font-weight: 800; font-size: 14px; letter-spacing: -.3px; }
     .logo-text .sub   { font-size: 11px; color: var(--text-muted); font-style: italic; font-family: 'Lora', serif; }
-
     .search-wrap { flex: 1; max-width: 480px; position: relative; margin-left: auto; }
     .search-icon {
       position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
@@ -84,31 +75,86 @@
       transition: border-color var(--transition), box-shadow var(--transition);
     }
     #searchInput:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59,130,246,.15);
-      background: #fff;
+      border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.15); background: #fff;
     }
     #searchInput::placeholder { color: var(--text-muted); }
 
-    /* ─── MAIN ─────────────────────────────────────────── */
+    /* ── MAIN ── */
     main { max-width: 1200px; margin: 32px auto; padding: 0 24px 64px; }
 
-    /* ─── LEGEND ───────────────────────────────────────── */
-    .legend { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+    /* ── LEGEND / FILTER CHIPS ── */
+    .legend {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      margin-bottom: 28px; align-items: center;
+    }
+    .legend-label {
+      font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 1px; color: var(--text-muted);
+      margin-right: 2px; flex-shrink: 0;
+    }
+
+    /* Base chip */
     .chip {
       display: inline-flex; align-items: center; gap: 6px;
-      padding: 4px 10px; border-radius: 999px;
+      padding: 5px 13px; border-radius: 999px;
       font-size: 11.5px; font-weight: 600;
-      border: 1.5px solid transparent; cursor: default; user-select: none;
+      border: 1.5px solid transparent;
+      cursor: pointer; user-select: none;
+      transition: transform var(--transition), box-shadow var(--transition),
+                  opacity var(--transition), filter var(--transition);
     }
-    .chip .dot { width: 7px; height: 7px; border-radius: 50%; }
+    .chip:hover  { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+    .chip:active { transform: scale(.95); }
+
+    /* When a filter is active, dim non-active chips */
+    .legend.has-filter .chip:not(.chip-active) {
+      opacity: .35; filter: grayscale(.5);
+    }
+    .chip.chip-active {
+      transform: translateY(-2px);
+      box-shadow: 0 0 0 3px rgba(0,0,0,.14), var(--shadow-sm);
+    }
+
+    .chip .dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+
+    /* Unit colours */
     .chip-paud    { background: var(--paud-dim);    color: #92400e; border-color: var(--paud); }
     .chip-sdit    { background: var(--sdit-dim);    color: #065f46; border-color: var(--sdit); }
     .chip-smpit   { background: var(--smpit-dim);   color: #1e3a8a; border-color: var(--smpit); }
     .chip-smait   { background: var(--smait-dim);   color: #4c1d95; border-color: var(--smait); }
     .chip-yayasan { background: var(--yayasan-dim); color: #991b1b; border-color: var(--yayasan); }
 
-    /* ─── CATEGORY SECTION ─────────────────────────────── */
+    /* "Semua" reset chip */
+    .chip-all {
+      background: var(--surface); color: var(--text-muted);
+      border-color: var(--border);
+    }
+    .chip-all.chip-active {
+      background: var(--text-main); color: #fff;
+      border-color: var(--text-main);
+      box-shadow: none; transform: none;
+    }
+    .chip-all:hover { transform: translateY(-2px); }
+
+    /* Active unit label pill in header area */
+    .filter-info {
+      display: none; align-items: center; gap: 6px;
+      font-size: 12px; font-weight: 600; color: var(--text-muted);
+      margin-bottom: 18px; margin-top: -10px;
+    }
+    .filter-info.visible { display: flex; }
+    .filter-info .fi-name {
+      background: var(--text-main); color: #fff;
+      padding: 2px 10px; border-radius: 999px; font-size: 11.5px;
+    }
+    .filter-info .fi-clear {
+      cursor: pointer; color: var(--text-muted); font-size: 11px;
+      background: none; border: none; font-family: inherit;
+      text-decoration: underline; padding: 0;
+    }
+    .filter-info .fi-clear:hover { color: var(--text-main); }
+
+    /* ── CATEGORY SECTION ── */
     .category-section { margin-bottom: 36px; }
     .category-header  { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
     .category-title   {
@@ -122,7 +168,7 @@
       border-radius: 999px; padding: 1px 8px; font-weight: 600;
     }
 
-    /* ── Lock badge ── */
+    /* Lock badges */
     .lock-badge {
       display: inline-flex; align-items: center; gap: 5px;
       padding: 3px 10px; border-radius: 999px;
@@ -132,21 +178,19 @@
       background: none;
     }
     .lock-badge:hover { opacity: .78; transform: scale(.97); }
-
     .lb-yayasan  { background: #fee2e2; color: #991b1b; border-color: #ef4444; }
     .lb-pimpinan { background: #f1f5f9; color: #1e293b; border-color: #334155; }
     .lb-unlocked { background: #d1fae5; color: #065f46; border-color: #10b981; cursor: default !important; }
     .lb-unlocked:hover { opacity: 1; transform: none; }
 
-    /* ─── LOCKED OVERLAY ───────────────────────────────── */
+    /* Locked overlay */
     .locked-overlay {
       display: flex; flex-direction: column;
       align-items: center; justify-content: center; gap: 10px;
       padding: 36px 20px;
       background: linear-gradient(135deg, #f8fafc, #f1f5f9);
       border: 2px dashed var(--border); border-radius: var(--radius-lg);
-      color: var(--text-muted); text-align: center;
-      cursor: pointer;
+      color: var(--text-muted); text-align: center; cursor: pointer;
       transition: border-color var(--transition), background var(--transition);
     }
     .locked-overlay:hover { border-color: #94a3b8; background: #edf2f7; }
@@ -163,14 +207,14 @@
     .lo-btn-yayasan  { background: #fee2e2; color: #991b1b; border-color: #ef4444; }
     .lo-btn-pimpinan { background: #f1f5f9; color: #1e293b; border-color: #334155; }
 
-    /* ─── LINK GRID ────────────────────────────────────── */
+    /* ── LINK GRID ── */
     .link-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 12px;
     }
 
-    /* ─── LINK CARD ────────────────────────────────────── */
+    /* ── LINK CARD ── */
     .link-card {
       display: flex; align-items: center; gap: 11px;
       padding: 12px 14px;
@@ -190,7 +234,6 @@
     .link-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-md); }
     .link-card:hover::before { opacity: 1; }
     .link-card:active { transform: translateY(-1px); }
-
     .card-icon {
       width: 34px; height: 34px; border-radius: var(--radius-sm);
       display: grid; place-items: center; font-size: 14px; flex-shrink: 0;
@@ -205,28 +248,24 @@
     }
     .link-card:hover .card-arrow { opacity: 1; transform: translateX(0); }
 
-    /* Unit colour variants */
+    /* Unit colours */
     .unit-paud  .card-icon  { background: var(--paud-dim);    color: var(--paud); }
     .unit-paud:hover         { border-color: var(--paud);    background: #fffbf0; }
     .unit-paud::before       { background: var(--paud); }
-
     .unit-sdit  .card-icon  { background: var(--sdit-dim);    color: var(--sdit); }
     .unit-sdit:hover         { border-color: var(--sdit);    background: #f0fdf9; }
     .unit-sdit::before       { background: var(--sdit); }
-
     .unit-smpit .card-icon  { background: var(--smpit-dim);   color: var(--smpit); }
     .unit-smpit:hover        { border-color: var(--smpit);   background: #f0f7ff; }
     .unit-smpit::before      { background: var(--smpit); }
-
     .unit-smait .card-icon  { background: var(--smait-dim);   color: var(--smait); }
     .unit-smait:hover        { border-color: var(--smait);   background: #faf5ff; }
     .unit-smait::before      { background: var(--smait); }
-
     .unit-yayasan .card-icon { background: var(--yayasan-dim); color: var(--yayasan); }
     .unit-yayasan:hover       { border-color: var(--yayasan); background: #fff5f5; }
     .unit-yayasan::before     { background: var(--yayasan); }
 
-    /* ─── STATES ───────────────────────────────────────── */
+    /* ── STATES ── */
     .state-screen {
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
@@ -248,7 +287,7 @@
     }
     #noResults { display: none; }
 
-    /* ─── MODAL OVERLAY ────────────────────────────────── */
+    /* ── MODAL ── */
     .modal-overlay {
       position: fixed; inset: 0; z-index: 500;
       background: rgba(15,23,42,.60);
@@ -258,51 +297,36 @@
       transition: opacity 220ms ease;
     }
     .modal-overlay.active { opacity: 1; pointer-events: all; }
-
     .modal-box {
-      background: var(--surface);
-      border-radius: var(--radius-lg);
-      box-shadow: var(--shadow-lg);
-      width: 100%; max-width: 390px;
+      background: var(--surface); border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg); width: 100%; max-width: 390px;
       padding: 0 0 28px;
       transform: translateY(20px) scale(.96);
       transition: transform 260ms cubic-bezier(.34,1.56,.64,1);
       position: relative; overflow: hidden;
     }
     .modal-overlay.active .modal-box { transform: translateY(0) scale(1); }
-
-    /* Coloured top banner */
-    .modal-banner {
-      padding: 28px 28px 20px;
-      display: flex; flex-direction: column; gap: 10px;
-    }
-    .banner-yayasan  { background: linear-gradient(135deg, #fee2e2 0%, #fef3c7 100%); }
-    .banner-pimpinan { background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%); }
-
+    .modal-banner { padding: 28px 28px 20px; display: flex; flex-direction: column; gap: 10px; }
+    .banner-yayasan  { background: linear-gradient(135deg, #fee2e2, #fef3c7); }
+    .banner-pimpinan { background: linear-gradient(135deg, #e2e8f0, #cbd5e1); }
     .modal-close {
       position: absolute; top: 12px; right: 14px;
       background: rgba(255,255,255,.7); border: none; cursor: pointer;
       color: var(--text-muted); font-size: 15px;
       width: 30px; height: 30px; border-radius: 50%;
-      display: grid; place-items: center;
-      backdrop-filter: blur(4px);
+      display: grid; place-items: center; backdrop-filter: blur(4px);
       transition: background var(--transition), color var(--transition);
     }
     .modal-close:hover { background: #fff; color: var(--text-main); }
-
     .modal-icon-wrap {
       width: 50px; height: 50px; border-radius: 14px;
       display: grid; place-items: center; font-size: 22px;
     }
     .icon-yayasan  { background: var(--yayasan-dim); color: var(--yayasan); }
-    .icon-pimpinan { background: #e2e8f0;            color: #1e293b; }
-
+    .icon-pimpinan { background: #e2e8f0; color: #1e293b; }
     .modal-title { font-size: 18px; font-weight: 800; }
     .modal-sub   { font-size: 12.5px; color: var(--text-muted); }
-
-    /* Form area */
-    .modal-body { padding: 20px 28px 0; }
-
+    .modal-body  { padding: 20px 28px 0; }
     .pw-label {
       display: block; font-size: 11.5px; font-weight: 700;
       color: var(--text-muted); text-transform: uppercase;
@@ -317,40 +341,33 @@
       transition: border-color var(--transition), box-shadow var(--transition);
     }
     .pw-input-wrap input:focus {
-      border-color: #3b82f6;
-      box-shadow: 0 0 0 3px rgba(59,130,246,.15);
+      border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,.15);
     }
     .pw-input-wrap input.inp-error {
-      border-color: #ef4444;
-      box-shadow: 0 0 0 3px rgba(239,68,68,.12);
+      border-color: #ef4444; box-shadow: 0 0 0 3px rgba(239,68,68,.12);
     }
     .pw-toggle {
       position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
       background: none; border: none; cursor: pointer;
-      color: var(--text-muted); font-size: 14px;
-      transition: color var(--transition); padding: 4px;
+      color: var(--text-muted); font-size: 14px; padding: 4px;
+      transition: color var(--transition);
     }
     .pw-toggle:hover { color: var(--text-main); }
-
     .pw-error {
       font-size: 12px; color: #ef4444; font-weight: 600;
       min-height: 18px; margin-bottom: 14px;
       display: flex; align-items: center; gap: 5px;
     }
-
     .modal-submit {
-      width: 100%; padding: 13px;
-      border-radius: 10px; border: none;
+      width: 100%; padding: 13px; border-radius: 10px; border: none;
       font-family: inherit; font-size: 14px; font-weight: 700;
       cursor: pointer; color: #fff; letter-spacing: .3px;
       transition: opacity var(--transition), transform var(--transition);
     }
     .modal-submit:hover  { opacity: .88; }
     .modal-submit:active { transform: scale(.98); }
-    .submit-yayasan  { background: linear-gradient(135deg, #ef4444 0%, #f97316 100%); }
-    .submit-pimpinan { background: linear-gradient(135deg, #1e293b 0%, #475569 100%); }
-
-    /* Shake animation */
+    .submit-yayasan  { background: linear-gradient(135deg, #ef4444, #f97316); }
+    .submit-pimpinan { background: linear-gradient(135deg, #1e293b, #475569); }
     @keyframes shake {
       0%,100% { transform: translateX(0); }
       20%,60%  { transform: translateX(-7px); }
@@ -358,13 +375,13 @@
     }
     .do-shake { animation: shake 330ms ease; }
 
-    /* ─── FOOTER ───────────────────────────────────────── */
+    /* ── FOOTER ── */
     .footer {
       text-align: center; font-size: 11.5px; color: var(--text-muted);
       padding: 16px; border-top: 1px solid var(--border); background: var(--surface);
     }
 
-    /* ─── RESPONSIVE ───────────────────────────────────── */
+    /* ── RESPONSIVE ── */
     @media (max-width: 600px) {
       .logo-text .sub { display: none; }
       .link-grid { grid-template-columns: 1fr 1fr; gap: 9px; }
@@ -378,7 +395,7 @@
 </head>
 <body>
 
-<!-- ─── HEADER ──────────────────────────────────────────── -->
+<!-- HEADER -->
 <header class="header">
   <div class="header-inner">
     <div class="logo-wrap">
@@ -395,14 +412,39 @@
   </div>
 </header>
 
-<!-- ─── MAIN ─────────────────────────────────────────────── -->
+<!-- MAIN -->
 <main>
-  <div class="legend">
-    <span class="chip chip-paud">   <span class="dot" style="background:var(--paud)"></span>PAUD</span>
-    <span class="chip chip-sdit">   <span class="dot" style="background:var(--sdit)"></span>SDIT</span>
-    <span class="chip chip-smpit">  <span class="dot" style="background:var(--smpit)"></span>SMPIT</span>
-    <span class="chip chip-smait">  <span class="dot" style="background:var(--smait)"></span>SMAIT</span>
-    <span class="chip chip-yayasan"><span class="dot" style="background:var(--yayasan)"></span>Yayasan</span>
+
+  <!-- Unit Filter Chips -->
+  <div class="legend" id="legend">
+    <span class="legend-label"><i class="fas fa-filter"></i> Unit:</span>
+    <button class="chip chip-all chip-active" data-unit="all">
+      <i class="fas fa-border-all"></i> Semua
+    </button>
+    <button class="chip chip-paud" data-unit="PAUD">
+      <span class="dot" style="background:var(--paud)"></span>PAUD
+    </button>
+    <button class="chip chip-sdit" data-unit="SDIT">
+      <span class="dot" style="background:var(--sdit)"></span>SDIT
+    </button>
+    <button class="chip chip-smpit" data-unit="SMPIT">
+      <span class="dot" style="background:var(--smpit)"></span>SMPIT
+    </button>
+    <button class="chip chip-smait" data-unit="SMAIT">
+      <span class="dot" style="background:var(--smait)"></span>SMAIT
+    </button>
+    <button class="chip chip-yayasan" data-unit="Yayasan">
+      <span class="dot" style="background:var(--yayasan)"></span>Yayasan
+    </button>
+  </div>
+
+  <!-- Active filter info bar -->
+  <div class="filter-info" id="filterInfo">
+    <span>Menampilkan unit</span>
+    <span class="fi-name" id="filterInfoName"></span>
+    <button class="fi-clear" id="filterClear">
+      <i class="fas fa-xmark"></i> Reset filter
+    </button>
   </div>
 
   <div id="app">
@@ -414,178 +456,187 @@
   <div class="state-screen" id="noResults">
     <span class="state-icon"><i class="fas fa-face-meh"></i></span>
     <h3>Tidak ditemukan</h3>
-    <p>Coba kata kunci lain.</p>
+    <p>Coba kata kunci lain atau reset filter unit.</p>
   </div>
+
 </main>
 
-<!-- ─── FOOTER ───────────────────────────────────────────── -->
 <footer class="footer">
   &copy; <span id="yr"></span> Yayasan Ar-Rahmah Sulawesi &mdash; Internal Use Only
 </footer>
 
-<!-- ══════════════════════════════════════════════════
-     PASSWORD MODAL
-═══════════════════════════════════════════════════ -->
+<!-- PASSWORD MODAL -->
 <div class="modal-overlay" id="pwModal" role="dialog" aria-modal="true">
   <div class="modal-box" id="modalBox">
-
-    <button class="modal-close" id="modalClose" aria-label="Tutup">
-      <i class="fas fa-xmark"></i>
-    </button>
-
-    <!-- Coloured top banner -->
+    <button class="modal-close" id="modalClose" aria-label="Tutup"><i class="fas fa-xmark"></i></button>
     <div class="modal-banner" id="modalBanner">
-      <div class="modal-icon-wrap" id="modalIconWrap">
-        <i id="modalIconEl"></i>
-      </div>
+      <div class="modal-icon-wrap" id="modalIconWrap"><i id="modalIconEl"></i></div>
       <div class="modal-title" id="modalTitle"></div>
       <div class="modal-sub">Masukkan password untuk membuka folder ini.</div>
     </div>
-
-    <!-- Form -->
     <div class="modal-body">
       <label class="pw-label" for="pwInput">Password</label>
       <div class="pw-input-wrap">
-        <input type="password" id="pwInput"
-               placeholder="••••••••••••"
-               autocomplete="current-password" />
-        <button class="pw-toggle" id="pwToggle" tabindex="-1" aria-label="Tampilkan">
-          <i class="fas fa-eye" id="pwEyeIcon"></i>
-        </button>
+        <input type="password" id="pwInput" placeholder="••••••••••••" autocomplete="current-password" />
+        <button class="pw-toggle" id="pwToggle" tabindex="-1"><i class="fas fa-eye" id="pwEyeIcon"></i></button>
       </div>
       <div class="pw-error" id="pwError"></div>
       <button class="modal-submit" id="modalSubmit">
         <i class="fas fa-unlock-keyhole"></i> Buka Folder
       </button>
     </div>
-
   </div>
 </div>
 
-<!-- ══════════════════════════════════════════════════
-     JAVASCRIPT
-═══════════════════════════════════════════════════ -->
 <script>
-/* ─────────────────────────────────────────────────────────
-   ⚙️  KONFIGURASI — sesuaikan di sini
-───────────────────────────────────────────────────────── */
-
+/* ══════════════════════════════════════════════════
+   ⚙️  KONFIGURASI
+═══════════════════════════════════════════════════ */
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSlTIQo3hq7x1pIyaRRqJa9TUa8haa-xIYsH7d_JYr2XLYfoa9QZLIiUJHvxd3cTAAXunNVoOqq89cu/pub?gid=0&single=true&output=csv';
 
-/*
-  Daftar kategori yang dilindungi password.
-  - key   : harus SAMA PERSIS dengan nilai kolom "Kategori" di Sheets
-  - password : ganti sesuai kebutuhan
-*/
 const PROTECTED = {
   'Yayasan': {
-    password : 'arrahmah2025',        // ← GANTI password Yayasan
+    password : 'arrahmah2025',
     label    : 'Folder Yayasan',
     icon     : 'fas fa-building-columns',
     theme    : 'yayasan',
   },
   'Pimpinan': {
-    password : 'pimpinan@rahasia',    // ← GANTI password Pimpinan
+    password : 'pimpinan@rahasia',
     label    : 'Folder Pimpinan',
     icon     : 'fas fa-user-shield',
     theme    : 'pimpinan',
   },
 };
 
-/*
-  Data dummy untuk Folder Pimpinan (belum ada di Sheets).
-  Hapus / ganti setelah Anda tambahkan baris di Google Sheets.
-*/
 const DUMMY_PIMPINAN = [
-  { 'Nama Link':'Dashboard Keuangan',  URL:'#', Kategori:'Pimpinan', Unit:'Yayasan', Ikon:'fas fa-chart-pie' },
-  { 'Nama Link':'Laporan Tahunan',     URL:'#', Kategori:'Pimpinan', Unit:'Yayasan', Ikon:'fas fa-file-chart-column' },
-  { 'Nama Link':'Evaluasi Program',    URL:'#', Kategori:'Pimpinan', Unit:'Yayasan', Ikon:'fas fa-clipboard-list' },
-  { 'Nama Link':'Notulen Rapat',       URL:'#', Kategori:'Pimpinan', Unit:'Yayasan', Ikon:'fas fa-people-group' },
-  { 'Nama Link':'Dokumen Legalitas',   URL:'#', Kategori:'Pimpinan', Unit:'Yayasan', Ikon:'fas fa-scale-balanced' },
-  { 'Nama Link':'Anggaran Yayasan',    URL:'#', Kategori:'Pimpinan', Unit:'Yayasan', Ikon:'fas fa-coins' },
+  { 'Nama Link':'Dashboard Keuangan', URL:'#', Kategori:'Pimpinan', Unit:'Yayasan', Ikon:'fas fa-chart-pie' },
+  { 'Nama Link':'Laporan Tahunan',    URL:'#', Kategori:'Pimpinan', Unit:'Yayasan', Ikon:'fas fa-file-chart-column' },
+  { 'Nama Link':'Evaluasi Program',   URL:'#', Kategori:'Pimpinan', Unit:'Yayasan', Ikon:'fas fa-clipboard-list' },
+  { 'Nama Link':'Notulen Rapat',      URL:'#', Kategori:'Pimpinan', Unit:'Yayasan', Ikon:'fas fa-people-group' },
+  { 'Nama Link':'Dokumen Legalitas',  URL:'#', Kategori:'Pimpinan', Unit:'Yayasan', Ikon:'fas fa-scale-balanced' },
+  { 'Nama Link':'Anggaran Yayasan',   URL:'#', Kategori:'Pimpinan', Unit:'Yayasan', Ikon:'fas fa-coins' },
 ];
 
-/* ─────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════════
    STATE
-───────────────────────────────────────────────────────── */
+═══════════════════════════════════════════════════ */
 document.getElementById('yr').textContent = new Date().getFullYear();
 
-let allData    = [];
-const unlocked = new Set();   // kategori yang sudah dibuka sesi ini
-let pendingCat = null;        // kategori yang sedang menunggu password
+let allData      = [];
+const unlocked   = new Set();
+let pendingCat   = null;
+let activeUnit   = 'all';   // ← NEW: current unit filter
+let searchQuery  = '';
 
-/* ─────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════════
    UTILS
-───────────────────────────────────────────────────────── */
+═══════════════════════════════════════════════════ */
 function escHtml(s) {
   return String(s)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;')
     .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
 function unitClass(unit) {
   const m = { PAUD:'unit-paud', SDIT:'unit-sdit', SMPIT:'unit-smpit',
               SMAIT:'unit-smait', YAYASAN:'unit-yayasan' };
   return m[(unit||'').toUpperCase()] || 'unit-yayasan';
 }
 
-/* ─────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════════
+   FILTER — combine search + unit
+═══════════════════════════════════════════════════ */
+function getFiltered() {
+  return allData.filter(r => {
+    const cat  = r['Kategori'] || '';
+    const unit = (r['Unit'] || '').toLowerCase();
+    const name = (r['Nama Link'] || '').toLowerCase();
+
+    /* Always hide locked-folder contents from filter results */
+    if (PROTECTED[cat] && !unlocked.has(cat)) return false;
+
+    /* Unit filter */
+    if (activeUnit !== 'all' && unit !== activeUnit.toLowerCase()) return false;
+
+    /* Search filter */
+    if (searchQuery && !name.includes(searchQuery)) return false;
+
+    return true;
+  });
+}
+
+function applyFilters() {
+  render(getFiltered());
+  updateFilterUI();
+}
+
+/* ══════════════════════════════════════════════════
    RENDER
-───────────────────────────────────────────────────────── */
+═══════════════════════════════════════════════════ */
 function render(data) {
   const app       = document.getElementById('app');
   const noResults = document.getElementById('noResults');
 
-  if (!data.length) {
+  /* For locked folders we still want to show the locked overlay
+     when no unit-filter is active, OR when the folder's unit matches. */
+  const lockedSections = buildLockedSections();
+
+  /* Merge visible data + locked placeholders */
+  const groups = {};
+
+  /* First pass: real data */
+  data.forEach(row => {
+    const cat = row['Kategori'] || 'Lainnya';
+    (groups[cat] = groups[cat] || []).push(row);
+  });
+
+  /* Second pass: add locked placeholders that aren't already visible */
+  lockedSections.forEach(({ cat, items, cfg }) => {
+    if (!groups[cat]) groups[cat] = { __locked: true, items, cfg };
+  });
+
+  const keys = Object.keys(groups);
+  if (keys.length === 0) {
     app.innerHTML = '';
     noResults.style.display = 'flex';
     return;
   }
   noResults.style.display = 'none';
 
-  /* Group by Kategori */
-  const groups = {};
-  data.forEach(row => {
-    const cat = row['Kategori'] || 'Lainnya';
-    (groups[cat] = groups[cat] || []).push(row);
-  });
-
   let html = '', delay = 0;
 
-  for (const [cat, items] of Object.entries(groups)) {
+  for (const cat of keys) {
+    const entry      = groups[cat];
+    const isLocked   = entry.__locked === true;
+    const items      = isLocked ? entry.items : entry;
     const isProt     = !!PROTECTED[cat];
     const isUnlocked = unlocked.has(cat);
     const cfg        = PROTECTED[cat] || {};
 
-    /* — Category header — */
-    html += `<section class="category-section" id="cat-${escHtml(cat)}">
-               <div class="category-header">
-                 <span class="category-title">${escHtml(cat)}</span>
-                 <div class="category-line"></div>`;
+    html += `<section class="category-section" id="cat-${escHtml(cat)}">`;
+    html += `<div class="category-header">`;
+    html += `<span class="category-title">${escHtml(cat)}</span>`;
+    html += `<div class="category-line"></div>`;
 
     if (isProt && !isUnlocked) {
-      html += `<button class="lock-badge lb-${cfg.theme}"
-                       onclick="openModal('${escHtml(cat)}')"
-                       title="Klik untuk membuka">
+      html += `<button class="lock-badge lb-${cfg.theme}" onclick="openModal('${escHtml(cat)}')" title="Klik untuk membuka">
                  <i class="fas fa-lock"></i> Terproteksi
                </button>`;
     } else if (isProt && isUnlocked) {
-      html += `<span class="lock-badge lb-unlocked">
-                 <i class="fas fa-lock-open"></i> Terbuka
-               </span>`;
+      html += `<span class="lock-badge lb-unlocked"><i class="fas fa-lock-open"></i> Terbuka</span>`;
     } else {
       html += `<span class="category-count">${items.length}</span>`;
     }
-
     html += `</div>`; /* end category-header */
 
-    /* — Content: locked overlay OR card grid — */
-    if (isProt && !isUnlocked) {
+    if (isLocked || (isProt && !isUnlocked)) {
+      /* Locked overlay */
+      const totalItems = allData.filter(r => r['Kategori'] === cat).length;
       html += `
         <div class="locked-overlay" onclick="openModal('${escHtml(cat)}')">
           <div class="lo-icon"><i class="fas fa-lock"></i></div>
           <div class="lo-title">${escHtml(cfg.label || cat)}</div>
-          <div class="lo-sub">${items.length} link tersedia setelah login</div>
+          <div class="lo-sub">${totalItems} link tersedia setelah login</div>
           <button class="lo-btn lo-btn-${cfg.theme}" onclick="event.stopPropagation();openModal('${escHtml(cat)}')">
             <i class="fas fa-key"></i>&nbsp; Masukkan Password
           </button>
@@ -608,32 +659,83 @@ function render(data) {
       });
       html += `</div>`;
     }
-
     html += `</section>`;
   }
 
   app.innerHTML = html;
 }
 
-/* ─────────────────────────────────────────────────────────
-   SEARCH
-   (locked folders hidden from search results)
-───────────────────────────────────────────────────────── */
-document.getElementById('searchInput').addEventListener('input', function () {
-  const q = this.value.trim().toLowerCase();
-  if (!q) { render(allData); return; }
+/* Return protected categories that should still show as locked
+   even when a unit filter is active (since their unit may match). */
+function buildLockedSections() {
+  const result = [];
+  for (const [cat, cfg] of Object.entries(PROTECTED)) {
+    if (unlocked.has(cat)) continue;
+    const items = allData.filter(r => r['Kategori'] === cat);
+    if (!items.length) continue;
+    /* Show locked placeholder if:
+       - no unit filter, OR
+       - at least one item in this folder matches the active unit */
+    const matchesUnit = activeUnit === 'all' ||
+      items.some(r => (r['Unit']||'').toLowerCase() === activeUnit.toLowerCase());
+    if (matchesUnit) result.push({ cat, items, cfg });
+  }
+  return result;
+}
 
-  const filtered = allData.filter(r => {
-    const cat = r['Kategori'] || '';
-    if (PROTECTED[cat] && !unlocked.has(cat)) return false;
-    return (r['Nama Link'] || '').toLowerCase().includes(q);
+/* ══════════════════════════════════════════════════
+   UNIT FILTER UI
+═══════════════════════════════════════════════════ */
+function updateFilterUI() {
+  const legend     = document.getElementById('legend');
+  const filterInfo = document.getElementById('filterInfo');
+  const filterName = document.getElementById('filterInfoName');
+  const chips      = legend.querySelectorAll('.chip');
+
+  /* Toggle has-filter class on legend */
+  if (activeUnit === 'all') {
+    legend.classList.remove('has-filter');
+    filterInfo.classList.remove('visible');
+  } else {
+    legend.classList.add('has-filter');
+    filterInfo.classList.add('visible');
+    filterName.textContent = activeUnit;
+  }
+
+  /* Mark active chip */
+  chips.forEach(chip => {
+    const u = chip.dataset.unit;
+    chip.classList.toggle('chip-active', u === activeUnit);
   });
-  render(filtered);
+}
+
+/* Chip click handler */
+document.getElementById('legend').addEventListener('click', e => {
+  const chip = e.target.closest('.chip[data-unit]');
+  if (!chip) return;
+  const unit = chip.dataset.unit;
+  /* Toggle: clicking active non-"all" chip resets to all */
+  activeUnit = (unit !== 'all' && unit === activeUnit) ? 'all' : unit;
+  applyFilters();
 });
 
-/* ─────────────────────────────────────────────────────────
-   MODAL — elements
-───────────────────────────────────────────────────────── */
+/* Reset button in filter info bar */
+document.getElementById('filterClear').addEventListener('click', () => {
+  activeUnit = 'all';
+  applyFilters();
+});
+
+/* ══════════════════════════════════════════════════
+   SEARCH
+═══════════════════════════════════════════════════ */
+document.getElementById('searchInput').addEventListener('input', function () {
+  searchQuery = this.value.trim().toLowerCase();
+  applyFilters();
+});
+
+/* ══════════════════════════════════════════════════
+   MODAL
+═══════════════════════════════════════════════════ */
 const modal       = document.getElementById('pwModal');
 const modalBox    = document.getElementById('modalBox');
 const modalBanner = document.getElementById('modalBanner');
@@ -647,101 +749,78 @@ const pwEyeIcon   = document.getElementById('pwEyeIcon');
 const modalSubmit = document.getElementById('modalSubmit');
 const modalClose  = document.getElementById('modalClose');
 
-/* MODAL — open */
 function openModal(cat) {
-  const cfg = PROTECTED[cat];
-  if (!cfg) return;
+  const cfg = PROTECTED[cat]; if (!cfg) return;
   pendingCat = cat;
-
   modalBanner.className = `modal-banner banner-${cfg.theme}`;
   modalIconW.className  = `modal-icon-wrap icon-${cfg.theme}`;
   modalIconEl.className = cfg.icon;
   modalTitle.textContent = cfg.label;
   modalSubmit.className  = `modal-submit submit-${cfg.theme}`;
-
-  pwInput.value = '';
-  pwInput.type  = 'password';
+  pwInput.value = ''; pwInput.type = 'password';
   pwInput.classList.remove('inp-error');
   pwEyeIcon.className = 'fas fa-eye';
-  pwError.innerHTML   = '';
-
+  pwError.innerHTML = '';
   modal.classList.add('active');
   setTimeout(() => pwInput.focus(), 260);
 }
+function closeModal() { modal.classList.remove('active'); pendingCat = null; }
 
-/* MODAL — close */
-function closeModal() {
-  modal.classList.remove('active');
-  pendingCat = null;
-}
-
-/* MODAL — submit */
 function tryUnlock() {
   if (!pendingCat) return;
   const cfg = PROTECTED[pendingCat];
-
   if (pwInput.value === cfg.password) {
     unlocked.add(pendingCat);
-    const justUnlocked = pendingCat;
+    const cat = pendingCat;
     closeModal();
-    render(allData);
+    applyFilters();
     setTimeout(() => {
-      const el = document.getElementById('cat-' + justUnlocked);
+      const el = document.getElementById('cat-' + cat);
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 120);
   } else {
     pwInput.classList.add('inp-error');
     pwError.innerHTML = '<i class="fas fa-circle-exclamation"></i> Password salah. Coba lagi.';
-    /* Shake the modal box */
     modalBox.classList.remove('do-shake');
     void modalBox.offsetWidth;
     modalBox.classList.add('do-shake');
     modalBox.addEventListener('animationend', () => modalBox.classList.remove('do-shake'), { once: true });
-    pwInput.value = '';
-    setTimeout(() => pwInput.focus(), 50);
+    pwInput.value = ''; setTimeout(() => pwInput.focus(), 50);
   }
 }
 
-/* MODAL — toggle eye */
 pwToggle.addEventListener('click', () => {
-  const hidden = pwInput.type === 'password';
-  pwInput.type = hidden ? 'text' : 'password';
-  pwEyeIcon.className = hidden ? 'fas fa-eye-slash' : 'fas fa-eye';
+  const h = pwInput.type === 'password';
+  pwInput.type = h ? 'text' : 'password';
+  pwEyeIcon.className = h ? 'fas fa-eye-slash' : 'fas fa-eye';
 });
-
-/* MODAL — event listeners */
 modalSubmit.addEventListener('click', tryUnlock);
 modalClose.addEventListener('click', closeModal);
 pwInput.addEventListener('keydown', e => {
   if (e.key === 'Enter') { tryUnlock(); return; }
-  pwInput.classList.remove('inp-error');
-  pwError.innerHTML = '';
+  pwInput.classList.remove('inp-error'); pwError.innerHTML = '';
 });
 modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 document.addEventListener('keydown', e => {
   if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
 });
 
-/* ─────────────────────────────────────────────────────────
+/* ══════════════════════════════════════════════════
    LOAD CSV
-───────────────────────────────────────────────────────── */
+═══════════════════════════════════════════════════ */
 function loadData() {
   Papa.parse(CSV_URL, {
-    download      : true,
-    header        : true,
-    skipEmptyLines: true,
+    download: true, header: true, skipEmptyLines: true,
     complete(results) {
       document.getElementById('loadingScreen').style.display = 'none';
-      /* Gabungkan data CSV + dummy Pimpinan */
       allData = [...results.data, ...DUMMY_PIMPINAN];
-      render(allData);
+      applyFilters();
     },
     error(err) {
       document.getElementById('loadingScreen').innerHTML = `
         <div class="state-screen">
           <span class="state-icon"><i class="fas fa-triangle-exclamation"></i></span>
-          <h3>Gagal memuat data</h3>
-          <p>${err.message}</p>
+          <h3>Gagal memuat data</h3><p>${err.message}</p>
         </div>`;
     }
   });
